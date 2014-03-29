@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.vector.Matrix4f;
 
 
 class RectData {
@@ -39,14 +40,16 @@ public class Graphics {
 	2, 3, 0
     };
     
+    private ArrayList<RectData> rects;
+    
     private int vsId = 0;
     private int fsId = 0;
     private int pId = 0;
     
-    private int screenWidth;
-    private int screenHeight;
+    private int projectionMatrixLocation;
+    private Matrix4f projectionMatrix = null;
+    private final FloatBuffer matrix44Buffer;
     
-    private ArrayList<RectData> rects;
     
     public Graphics(int screenWidth, int screenHeight, String title) throws LWJGLException {
         PixelFormat pixelFormat = new PixelFormat();
@@ -61,9 +64,6 @@ public class Graphics {
         
         rects = new ArrayList<>();
         
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
-        
 	ByteBuffer indicesBuffer = BufferUtils.createByteBuffer(rectIndices.length);
 	indicesBuffer.put(rectIndices);
 	indicesBuffer.flip();
@@ -74,7 +74,10 @@ public class Graphics {
 	GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
         
         setupShaders();
-         
+        
+        projectionMatrix = MathUtil.toOrtho2D(null, 0, 0, screenWidth, screenHeight);
+        matrix44Buffer = BufferUtils.createFloatBuffer(16);
+        
         GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
     }
     
@@ -146,14 +149,16 @@ public class Graphics {
         
         rdata.vertBuffer.rewind();
         rdata.vertBuffer.put(new float[] {
-            rect.x, rect.y-rect.height, 0f, 1f,
             rect.x, rect.y, 0f, 1f,
-            rect.x+rect.width, rect.y, 0f, 1f,
-            rect.x+rect.width, rect.y-rect.height, 0f, 1f
+            rect.x, rect.y+rect.height, 0f, 1f,
+            rect.x+rect.width, rect.y+rect.height, 0f, 1f,
+            rect.x+rect.width, rect.y, 0f, 1f
         });
         rdata.vertBuffer.flip();
         
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rdata.vertBufferId);
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, rdata.vertBuffer);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
     
     public void draw() {
@@ -161,6 +166,9 @@ public class Graphics {
         
         GL20.glUseProgram(pId);
 	
+        projectionMatrix.store(matrix44Buffer); matrix44Buffer.flip();
+        GL20.glUniformMatrix4(projectionMatrixLocation, false, matrix44Buffer);
+        
         for(RectData rdata : rects) {
             GL30.glBindVertexArray(rdata.vertArrayId);
             GL20.glEnableVertexAttribArray(0);
@@ -189,10 +197,12 @@ public class Graphics {
 
         GL20.glBindAttribLocation(pId, 0, "in_Position");
         GL20.glBindAttribLocation(pId, 1, "in_Color");
-
+        
         GL20.glLinkProgram(pId);
         GL20.glValidateProgram(pId);
 
+        projectionMatrixLocation = GL20.glGetUniformLocation(pId, "projectionMatrix");
+        
         int  errorCheckValue = GL11.glGetError();
         if (errorCheckValue != GL11.GL_NO_ERROR) {
                 System.out.println("ERROR - Could not create the shaders:" + GLU.gluErrorString(errorCheckValue));

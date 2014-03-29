@@ -15,8 +15,8 @@ public class Main {
             graphics.addRect(game.ball);
             
             while (!Display.isCloseRequested()) {
-                //game.update();
-                //graphics.updateRect(game.ball);
+                game.update();
+                graphics.updateRect(game.ball);
                 graphics.draw();
                 
                 Display.sync(60);

@@ -2,8 +2,8 @@
 package ponggl;
 
 public class Ball extends Rectangle {
-    public static float DEFAULT_WIDTH = 0.2f;
-    public static float DEFAULT_HEIGHT = 0.2f;
+    public static float DEFAULT_WIDTH = 20;
+    public static float DEFAULT_HEIGHT = 20;
     
     
     public Vector2D trajectory;
