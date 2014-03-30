@@ -23,24 +23,11 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Matrix4f;
 
 
-class RectData {
-    public Rectangle rect;
-    public FloatBuffer vertBuffer;
-    public int vertBufferId, colBufferId, vertArrayId = 0;
-}
+
 
 
 public class Graphics {
-    private final int VALUES_PER_VERTEX = 4;  //used for the position (x,y,z,w), or for the color (r,g,b,a)
-    private final int VERTICES_PER_SHAPE = 4;  //we're drawing rectangles
-    
-    private int indicesBufferId = 0;
-    private byte[] rectIndices = {  //the vertices needed for a rectangle (same for all so we use a common buffer)
-	0, 1, 2,
-	2, 3, 0
-    };
-    
-    private ArrayList<RectData> rects;
+    private final ArrayList<GameObject> objects;
     
     private int vsId = 0;
     private int fsId = 0;
@@ -52,6 +39,8 @@ public class Graphics {
     
     
     public Graphics(int screenWidth, int screenHeight, String title) throws LWJGLException {
+        objects = new ArrayList<>();
+        
         PixelFormat pixelFormat = new PixelFormat();
         ContextAttribs contextAtrributes = new ContextAttribs(3, 2)
                 .withForwardCompatible(true)
@@ -61,127 +50,35 @@ public class Graphics {
         Display.setTitle(title);
         Display.create(pixelFormat, contextAtrributes);
         
-        
-        rects = new ArrayList<>();
-        
-	ByteBuffer indicesBuffer = BufferUtils.createByteBuffer(rectIndices.length);
-	indicesBuffer.put(rectIndices);
-	indicesBuffer.flip();
-        
-        indicesBufferId = GL15.glGenBuffers();
-	GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesBufferId);
-	GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL15.GL_STATIC_DRAW);
-	GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
-        
         setupShaders();
         
         projectionMatrix = MathUtil.toOrtho2D(null, 0, 0, screenWidth, screenHeight);
         matrix44Buffer = BufferUtils.createFloatBuffer(16);
         
-        GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
+        GL20.glUseProgram(pId);
+        projectionMatrix.store(matrix44Buffer);
+        matrix44Buffer.flip();
+        GL20.glUniformMatrix4(projectionMatrixLocation, false, matrix44Buffer);
+        GL20.glUseProgram(0);
+        
+        GL11.glClearColor(0f, 0f, 0f, 0f);
     }
     
-    public void addRect(Rectangle rect) {
-        RectData rdata = new RectData();
-        rdata.rect = rect;
-        
-        rdata.vertBuffer = BufferUtils.createFloatBuffer(VALUES_PER_VERTEX * VERTICES_PER_SHAPE);
-        rdata.vertBuffer.put(new float[] {
-            rect.x, rect.y, 0f, 1f,
-            rect.x, rect.y+rect.height, 0f, 1f,
-            rect.x+rect.width, rect.y+rect.height, 0f, 1f,
-            rect.x+rect.width, rect.y, 0f, 1f
-        });
-        rdata.vertBuffer.flip();
-        
-        FloatBuffer colBuffer = BufferUtils.createFloatBuffer(VALUES_PER_VERTEX * VERTICES_PER_SHAPE);
-        //use a single color for the entire shape
-        for(int i=0; i<VERTICES_PER_SHAPE; i++) {
-            colBuffer.put(rect.color.getRGBComponents(null));
-        }
-        colBuffer.flip();
-        
-        rdata.vertArrayId = GL30.glGenVertexArrays();
-	GL30.glBindVertexArray(rdata.vertArrayId);
-        
-        rdata.vertBufferId = GL15.glGenBuffers();
-	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rdata.vertBufferId);
-	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, rdata.vertBuffer, GL15.GL_STATIC_DRAW);
-	GL20.glVertexAttribPointer(0, VALUES_PER_VERTEX, GL11.GL_FLOAT, false, 0, 0);
-        
-        rdata.colBufferId = GL15.glGenBuffers();
-	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rdata.colBufferId);
-	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colBuffer, GL15.GL_STATIC_DRAW);
-	GL20.glVertexAttribPointer(1, VALUES_PER_VERTEX, GL11.GL_FLOAT, false, 0, 0);
-	
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);	
-	GL30.glBindVertexArray(0);
-        
-        rects.add(rdata);
+    public void registerObject(GameObject obj) {
+        objects.add(obj);
     }
     
-    private RectData getRData(Rectangle rect) {
-        for(RectData rdata : rects) {
-            if(rdata.rect == rect) {
-                return rdata;
-            }
-        }
-        return null;
-    }
-    
-    public void removeRect(Rectangle rect) {
-        RectData rdata = getRData(rect);
-        if(rdata != null) {
-            deleteRData(rdata);
-            rects.remove(rdata);
-        }
-    }
-    
-    private void deleteRData(RectData rdata) {
-	GL15.glDeleteBuffers(rdata.vertBufferId);
-        GL15.glDeleteBuffers(rdata.colBufferId);
-        GL30.glDeleteVertexArrays(rdata.vertArrayId);
-    }
-    
-    public void updateRect(Rectangle rect) {
-        RectData rdata = getRData(rect);
-        if(rdata == null) return;
-        
-        rdata.vertBuffer.rewind();
-        rdata.vertBuffer.put(new float[] {
-            rect.x, rect.y, 0f, 1f,
-            rect.x, rect.y+rect.height, 0f, 1f,
-            rect.x+rect.width, rect.y+rect.height, 0f, 1f,
-            rect.x+rect.width, rect.y, 0f, 1f
-        });
-        rdata.vertBuffer.flip();
-        
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, rdata.vertBufferId);
-        GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, rdata.vertBuffer);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+    public void unregisterObject(GameObject obj) {
+        objects.remove(obj);
     }
     
     public void draw() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         
         GL20.glUseProgram(pId);
-	
-        projectionMatrix.store(matrix44Buffer); matrix44Buffer.flip();
-        GL20.glUniformMatrix4(projectionMatrixLocation, false, matrix44Buffer);
         
-        for(RectData rdata : rects) {
-            GL30.glBindVertexArray(rdata.vertArrayId);
-            GL20.glEnableVertexAttribArray(0);
-            GL20.glEnableVertexAttribArray(1);
-
-            GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesBufferId);
-
-            GL11.glDrawElements(GL11.GL_TRIANGLES, rectIndices.length, GL11.GL_UNSIGNED_BYTE, 0);
-
-            GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
-            GL20.glDisableVertexAttribArray(0);
-            GL20.glDisableVertexAttribArray(1);
-            GL30.glBindVertexArray(0);
+        for(GameObject obj : objects) {
+            obj.draw();
         }
         
         GL20.glUseProgram(0);
@@ -232,12 +129,5 @@ public class Graphics {
         GL20.glCompileShader(shaderID);
 
         return shaderID;
-    }
-    
-    public void close() {
-        for(RectData rdata : rects) {
-            deleteRData(rdata);
-        }
-        Display.destroy();
     }
 }

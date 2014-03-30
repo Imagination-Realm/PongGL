@@ -4,12 +4,12 @@ package ponggl;
 import java.awt.geom.Point2D;
 
 public class Vector2D extends Point2D.Double {
-    public Vector2D(double x, double y) {
-        super(x, y);
-    }
-    
     public Vector2D() {
         this(0, 0);
+    }
+    
+    public Vector2D(double x, double y) {
+        super(x, y);
     }
     
     public double lengthSquared() {
