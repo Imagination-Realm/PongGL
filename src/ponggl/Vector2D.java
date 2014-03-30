@@ -3,6 +3,7 @@ package ponggl;
 
 import java.awt.geom.Point2D;
 
+
 public class Vector2D extends Point2D.Double {
     public Vector2D() {
         this(0, 0);

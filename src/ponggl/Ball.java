@@ -8,7 +8,7 @@ import org.lwjgl.opengl.*;
 
 
 public class Ball extends GameObject {
-    private final int NR_SEGMENTS = 10;
+    private final int NR_SEGMENTS = 20;
     private final int NR_VERTICES = (NR_SEGMENTS+2);
     private final int VALUES_PER_VERTEX = 2;
     private final int VALUES_PER_COLOR = 4;
@@ -29,11 +29,12 @@ public class Ball extends GameObject {
         this.color = Color.WHITE;
         this.trajectory = trajectory;
         
-        vertBuffer = BufferUtils.createFloatBuffer(VALUES_PER_VERTEX*NR_VERTICES);
+        vertBuffer = BufferUtils.createFloatBuffer(VALUES_PER_VERTEX * NR_VERTICES);
         vertBuffer.put(new float[] {x+radius, y+radius});
-        for( int i = 0; i < NR_SEGMENTS+1; i++ ) {
+        for( int i = 0; i < NR_SEGMENTS+1; i++ ) {  //+1 so it connects back to the first
             float angle = (float)(2*Math.PI*i)/NR_SEGMENTS;
-            vertBuffer.put(new float[] {x+radius + (float)Math.sin(angle) * radius, y+radius + (float)Math.cos(angle) * radius});
+            vertBuffer.put(x+radius + (float)Math.sin(angle) * radius);
+            vertBuffer.put(y+radius + (float)Math.cos(angle) * radius);
         }
         vertBuffer.flip();
         
@@ -61,10 +62,12 @@ public class Ball extends GameObject {
     }
     
     private void update() {
+        vertBuffer.rewind();
         vertBuffer.put(new float[] {x+radius, y+radius});
-        for( int i = 0; i < NR_SEGMENTS+1; i++ ) {
+        for( int i = 0; i < NR_SEGMENTS+1; i++ ) {  //+1 so it connects back to the first
             float angle = (float)(2*Math.PI*i)/NR_SEGMENTS;
-            vertBuffer.put(new float[] {x+radius + (float)Math.sin(angle) * radius, y+radius + (float)Math.cos(angle) * radius});
+            vertBuffer.put(x+radius + (float)Math.sin(angle) * radius);
+            vertBuffer.put(y+radius + (float)Math.cos(angle) * radius);
         }
         vertBuffer.flip();
         

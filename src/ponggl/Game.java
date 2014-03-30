@@ -1,82 +1,60 @@
 
 package ponggl;
 
-import java.util.ArrayList;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
 
-public class Game {
+
+public class Game extends GameEngine {
+    private static final int WIDTH = 640;
+    private static final int HEIGHT = 480;
+    
     public static void main(String[] args) throws LWJGLException {
-        Game game = new Game(640, 480);
+        Game game = new Game();
     }
     
-    private final int screenWidth;
-    private final int screenHeight;
-    private final ArrayList<GameObject> objects;
     private final Ball ball;
     private final Paddle paddle;
     
-    public Game(int screenWidth, int screenHeight) throws LWJGLException {
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
+    public Game() throws LWJGLException {
+        super(WIDTH, HEIGHT, "PongGL");
         
-        objects = new ArrayList<>();
-        
-        Graphics graphics = new Graphics(screenWidth, screenHeight, "PongGL");
-        
-        ball = new Ball(screenWidth/2, screenHeight/2, 10, new Vector2D(-3, 1));
+        ball = new Ball(0, 0, 20, new Vector2D(-4, 1.5f));
         registerObject(ball);
-        graphics.registerObject(ball);
+        ball.center();
         
-        paddle = new Paddle(screenWidth-30, 100, 20, 200);
-        //registerObject(paddle);
-        //graphics.registerObject(paddle);
+        paddle = new Paddle(WIDTH-30, 100, 20, 200);
+        registerObject(paddle);
         
-        while (!Display.isCloseRequested()) {
-                update();
-                updateObjects();
-                graphics.draw();
-                
-                Display.sync(60);
-                Display.update();
-            }
-            
-            close();
+        start();
     }
     
-    public void registerObject(GameObject obj) {
-        objects.add(obj);
+    public void reset() {
+        ball.center();
+        ball.trajectory =  new Vector2D(-4, 1.5f);
+        
+        paddle.centerVertically();
     }
     
-    public void unregisterObject(GameObject obj) {
-        objects.remove(obj);
-    }
-    
-    public void update() {
-        if(ball.intersectsLine(0, 0, 0, screenHeight)) {  //left
-            ball.trajectory = ball.trajectory.reflected(new Vector2D(1,0));
-        }
-        if(ball.intersectsLine(0, 0, screenWidth, 0)) {  //top
-            ball.trajectory = ball.trajectory.reflected(new Vector2D(0,1));
-        }
-        if(ball.intersectsLine(screenWidth, 0, screenWidth, screenHeight)) {  //right
+    @Override
+    public void think() {
+        if(ball.intersects(paddle)) {
             ball.trajectory = ball.trajectory.reflected(new Vector2D(-1,0));
         }
-        if(ball.intersectsLine(0, screenHeight, screenWidth, screenHeight)) {  //bottom
+        
+        if(ball.intersectsLine(0, 0, 0, HEIGHT)) {  //left
+            ball.trajectory = ball.trajectory.reflected(new Vector2D(1,0));
+        }
+        if(ball.intersectsLine(0, 0, WIDTH, 0)) {  //top
+            ball.trajectory = ball.trajectory.reflected(new Vector2D(0,1));
+        }
+        if(ball.intersectsLine(WIDTH, 0, WIDTH, HEIGHT)) {  //right
+            reset();
+        }
+        if(ball.intersectsLine(0, HEIGHT, WIDTH, HEIGHT)) {  //bottom
             ball.trajectory = ball.trajectory.reflected(new Vector2D(0,-1));
         }
     }
-    
-    public void updateObjects() {
-        for(GameObject obj : objects) {
-            obj.think();
-        }
-    }
-    
-    public void close() {
-        for(GameObject obj : objects) {
-            obj.onRemove();
-        }
-        Display.destroy();
-    }
+
+    @Override
+    public void onClose() {}
 }

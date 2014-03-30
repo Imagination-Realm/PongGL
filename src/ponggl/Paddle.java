@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.*;
 
 
@@ -73,10 +74,10 @@ public class Paddle extends GameObject {
     public void update() {
         vertBuffer.rewind();
         vertBuffer.put(new float[] {
-            x, y, 0f, 1f,
-            x, y+height, 0f, 1f,
-            x+width, y+height, 0f, 1f,
-            x+width, y, 0f, 1f
+            x, y,
+            x, y+height,
+            x+width, y+height,
+            x+width, y
         });
         vertBuffer.flip();
         
@@ -101,9 +102,16 @@ public class Paddle extends GameObject {
     }
     
     @Override
-    public void think() {}
+    public void think() {
+        if(Keyboard.isKeyDown(Keyboard.KEY_UP) && y-5 >= 0) {
+            setPos(x, y-5);
+        }
+        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN) && y+5+height <= engine.getScreenHeight()) {
+            setPos(x, y+5);
+        }
+    }
     
-    public void move(float x, float y) {
+    public void setPos(float x, float y) {
         this.x = x;
         this.y = y;
         

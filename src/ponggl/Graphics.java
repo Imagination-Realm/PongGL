@@ -4,31 +4,15 @@ package ponggl;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.ContextAttribs;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.opengl.*;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.vector.Matrix4f;
 
 
-
-
-
 public class Graphics {
-    private final ArrayList<GameObject> objects;
-    
     private int vsId = 0;
     private int fsId = 0;
     private int pId = 0;
@@ -39,8 +23,6 @@ public class Graphics {
     
     
     public Graphics(int screenWidth, int screenHeight, String title) throws LWJGLException {
-        objects = new ArrayList<>();
-        
         PixelFormat pixelFormat = new PixelFormat();
         ContextAttribs contextAtrributes = new ContextAttribs(3, 2)
                 .withForwardCompatible(true)
@@ -64,23 +46,13 @@ public class Graphics {
         GL11.glClearColor(0f, 0f, 0f, 0f);
     }
     
-    public void registerObject(GameObject obj) {
-        objects.add(obj);
-    }
-    
-    public void unregisterObject(GameObject obj) {
-        objects.remove(obj);
-    }
-    
-    public void draw() {
+    public void startDraw() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         
         GL20.glUseProgram(pId);
-        
-        for(GameObject obj : objects) {
-            obj.draw();
-        }
-        
+    }
+    
+    public void endDraw() {
         GL20.glUseProgram(0);
     }
     
