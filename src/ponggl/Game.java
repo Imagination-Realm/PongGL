@@ -9,7 +9,7 @@ public class Game extends GameEngine {
     private static final int HEIGHT = 480;
     
     public static void main(String[] args) throws LWJGLException {
-        Game game = new Game();
+        new Game();
     }
     
     private final Ball ball;

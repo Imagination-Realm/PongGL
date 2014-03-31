@@ -57,8 +57,8 @@ public class Graphics {
     }
     
     private void setupShaders() {
-        vsId = this.loadShader("shaders/vertex.glsl", GL20.GL_VERTEX_SHADER);
-        fsId = this.loadShader("shaders/fragment.glsl", GL20.GL_FRAGMENT_SHADER);
+        vsId = this.loadShader("resources/shaders/vertex.glsl", GL20.GL_VERTEX_SHADER);
+        fsId = this.loadShader("resources/shaders/fragment.glsl", GL20.GL_FRAGMENT_SHADER);
 
         pId = GL20.glCreateProgram();
         GL20.glAttachShader(pId, vsId);
