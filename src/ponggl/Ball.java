@@ -45,29 +45,29 @@ public class Ball extends GameObject {
         colBuffer.flip();
         
         vertArrayId = GL30.glGenVertexArrays();
-	GL30.glBindVertexArray(vertArrayId);
+        GL30.glBindVertexArray(vertArrayId);
         
         vertBufferId = GL15.glGenBuffers();
-	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertBufferId);
-	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertBuffer, GL15.GL_STATIC_DRAW);
-	GL20.glVertexAttribPointer(0, VALUES_PER_VERTEX, GL11.GL_FLOAT, false, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertBuffer, GL15.GL_STATIC_DRAW);
+		GL20.glVertexAttribPointer(0, VALUES_PER_VERTEX, GL11.GL_FLOAT, false, 0, 0);
         
         colBufferId = GL15.glGenBuffers();
-	GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colBufferId);
-	GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colBuffer, GL15.GL_STATIC_DRAW);
-	GL20.glVertexAttribPointer(1, VALUES_PER_COLOR, GL11.GL_FLOAT, false, 0, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, colBufferId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colBuffer, GL15.GL_STATIC_DRAW);
+		GL20.glVertexAttribPointer(1, VALUES_PER_COLOR, GL11.GL_FLOAT, false, 0, 0);
 	
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);	
-	GL30.glBindVertexArray(0);
+        GL30.glBindVertexArray(0);
     }
     
     private void update() {
         vertBuffer.rewind();
-        vertBuffer.put(new float[] {x+radius, y+radius});
+        vertBuffer.put(new float[] {area.x+radius, area.y+radius});
         for( int i = 0; i < NR_SEGMENTS+1; i++ ) {  //+1 so it connects back to the first
             float angle = (float)(2*Math.PI*i)/NR_SEGMENTS;
-            vertBuffer.put(x+radius + (float)Math.sin(angle) * radius);
-            vertBuffer.put(y+radius + (float)Math.cos(angle) * radius);
+            vertBuffer.put(area.x+radius + (float)Math.sin(angle) * radius);
+            vertBuffer.put(area.y+radius + (float)Math.cos(angle) * radius);
         }
         vertBuffer.flip();
         
@@ -91,8 +91,8 @@ public class Ball extends GameObject {
     
     @Override
     public void think() {
-        x += trajectory.x;
-        y += trajectory.y;
+    	area.x += trajectory.x;
+    	area.y += trajectory.y;
         
         update();
     }

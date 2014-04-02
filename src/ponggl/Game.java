@@ -4,12 +4,13 @@ package ponggl;
 import org.lwjgl.LWJGLException;
 
 
-public class Game extends GameEngine {
+public class Game extends GameBase {
     private static final int WIDTH = 640;
     private static final int HEIGHT = 480;
     
     public static void main(String[] args) throws LWJGLException {
-        new Game();
+        Game game = new Game();
+        game.start();
     }
     
     private final Ball ball;
@@ -24,8 +25,6 @@ public class Game extends GameEngine {
         
         paddle = new Paddle(WIDTH-30, 100, 20, 200);
         registerObject(paddle);
-        
-        start();
     }
     
     public void reset() {
@@ -37,20 +36,20 @@ public class Game extends GameEngine {
     
     @Override
     public void think() {
-        if(ball.intersects(paddle)) {
+        if(ball.area.intersects(paddle.area)) {
             ball.trajectory = ball.trajectory.reflected(new Vector2D(-1,0));
         }
         
-        if(ball.intersectsLine(0, 0, 0, HEIGHT)) {  //left
+        if(ball.area.intersectsLine(0, 0, 0, HEIGHT)) {  //left
             ball.trajectory = ball.trajectory.reflected(new Vector2D(1,0));
         }
-        if(ball.intersectsLine(0, 0, WIDTH, 0)) {  //top
+        if(ball.area.intersectsLine(0, 0, WIDTH, 0)) {  //top
             ball.trajectory = ball.trajectory.reflected(new Vector2D(0,1));
         }
-        if(ball.intersectsLine(WIDTH, 0, WIDTH, HEIGHT)) {  //right
+        if(ball.area.intersectsLine(WIDTH, 0, WIDTH, HEIGHT)) {  //right
             reset();
         }
-        if(ball.intersectsLine(0, HEIGHT, WIDTH, HEIGHT)) {  //bottom
+        if(ball.area.intersectsLine(0, HEIGHT, WIDTH, HEIGHT)) {  //bottom
             ball.trajectory = ball.trajectory.reflected(new Vector2D(0,-1));
         }
     }

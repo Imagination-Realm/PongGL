@@ -6,13 +6,13 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 
 
-public abstract class GameEngine {
+public abstract class GameBase {
     private final int screenWidth;
     private final int screenHeight;
     private final ArrayList<GameObject> gObjects;
     private Graphics graphics;
     
-    public GameEngine(int screenWidth, int screenHeight, String windowTitle) throws LWJGLException {
+    public GameBase(int screenWidth, int screenHeight, String windowTitle) throws LWJGLException {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         

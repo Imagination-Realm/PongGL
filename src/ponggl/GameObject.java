@@ -4,8 +4,9 @@ package ponggl;
 import java.awt.geom.Rectangle2D;
 
 
-public abstract class GameObject extends Rectangle2D.Float {
-    protected GameEngine engine;
+public abstract class GameObject {
+	public Rectangle2D.Float area;
+    protected GameBase engine;
     
     public GameObject() {
         this(0,0,0,0);
@@ -16,31 +17,31 @@ public abstract class GameObject extends Rectangle2D.Float {
     }
     
     public GameObject(float x, float y, float width, float height) {
-        super(x, y, width, height);
+    	area = new Rectangle2D.Float(x, y, width, height);
     }
     
-    public void setPos(float x, float y) {
-        this.x = x;
-        this.y = y;
+    public void setLocation(float x, float y) {
+    	area.x = x;
+    	area.y = y;
     }
     
     public void centerHorizontally() {
-        setPos((engine.getScreenWidth() - width)/2, y);
+        setLocation((engine.getScreenWidth() - area.width)/2, area.y);
     }
     
     public void centerVertically() {
-       setPos(x, (engine.getScreenHeight() - height)/2);
+       setLocation(area.x, (engine.getScreenHeight() - area.height)/2);
     }
     
     public void center() {
-        setPos((engine.getScreenWidth() - width)/2, (engine.getScreenHeight() - height)/2);
+        setLocation((engine.getScreenWidth() - area.width)/2, (engine.getScreenHeight() - area.height)/2);
     }
 
-    public GameEngine getEngine() {
+    public GameBase getEngine() {
         return engine;
     }
 
-    public void setEngine(GameEngine engine) {
+    public void setEngine(GameBase engine) {
         this.engine = engine;
     }
     
