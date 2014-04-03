@@ -8,7 +8,6 @@ import java.nio.FloatBuffer;
 import lib2d.GameObject;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.*;
 
 
@@ -105,14 +104,7 @@ public class Paddle extends GameObject {
     }
     
     @Override
-    public void think() {
-        if(Keyboard.isKeyDown(Keyboard.KEY_UP) && area.y-5 >= 0) {
-            setLocation(area.x, area.y-5);
-        }
-        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN) && area.y+5+area.height <= engine.getScreenHeight()) {
-            setLocation(area.x, area.y+5);
-        }
-    }
+    public void think() {}
     
     public void setLocation(float x, float y) {
     	super.setLocation(x, y);

@@ -24,7 +24,9 @@ public abstract class Game {
     public void start() {
         while (!Display.isCloseRequested()) {
             think();
-            objectsThink();
+            for(GameObject obj : gObjects) {
+                obj.think();
+            }
             
             graphics.startDraw();
             for(GameObject obj : gObjects) {
@@ -37,12 +39,6 @@ public abstract class Game {
         }
             
         close();
-    }
-    
-    public void objectsThink() {
-        for(GameObject obj : gObjects) {
-            obj.think();
-        }
     }
     
     public void close() {
