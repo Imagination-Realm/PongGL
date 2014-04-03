@@ -1,22 +1,25 @@
 
 package ponggl;
 
+import java.awt.Color;
+import lib2d.Vector2D;
+import lib2d.Game;
 import org.lwjgl.LWJGLException;
 
 
-public class Game extends GameBase {
+public class Pong extends Game {
     private static final int WIDTH = 640;
     private static final int HEIGHT = 480;
     
     public static void main(String[] args) throws LWJGLException {
-        Game game = new Game();
-        game.start();
+        Pong pong = new Pong();
+        pong.start();
     }
     
     private final Ball ball;
     private final Paddle paddle;
     
-    public Game() throws LWJGLException {
+    public Pong() throws LWJGLException {
         super(WIDTH, HEIGHT, "PongGL");
         
         ball = new Ball(0, 0, 20, new Vector2D(-4, 1.5f));
@@ -25,6 +28,8 @@ public class Game extends GameBase {
         
         paddle = new Paddle(WIDTH-30, 100, 20, 200);
         registerObject(paddle);
+        
+        getGraphics().setBackgroundColor(Color.BLACK);
     }
     
     public void reset() {

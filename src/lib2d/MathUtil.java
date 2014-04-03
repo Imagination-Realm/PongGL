@@ -28,7 +28,7 @@
  *	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *	POSSIBILITY OF SUCH DAMAGE.
  */
-package ponggl;
+package lib2d;
 
 import org.lwjgl.util.vector.Matrix4f;
 

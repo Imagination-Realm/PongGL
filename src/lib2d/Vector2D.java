@@ -1,5 +1,5 @@
 
-package ponggl;
+package lib2d;
 
 import java.awt.geom.Point2D;
 

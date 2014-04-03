@@ -1,10 +1,12 @@
 
-package ponggl;
+package lib2d;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.FloatBuffer;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.*;
@@ -42,8 +44,6 @@ public class Graphics {
         matrix44Buffer.flip();
         GL20.glUniformMatrix4(projectionMatrixLocation, false, matrix44Buffer);
         GL20.glUseProgram(0);
-        
-        GL11.glClearColor(0f, 0f, 0f, 0f);
     }
     
     public void startDraw() {
@@ -54,6 +54,10 @@ public class Graphics {
     
     public void endDraw() {
         GL20.glUseProgram(0);
+    }
+    
+    public void setBackgroundColor(Color color) {
+    	GL11.glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     }
     
     private void setupShaders() {

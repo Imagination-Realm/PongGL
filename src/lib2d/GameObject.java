@@ -1,12 +1,12 @@
 
-package ponggl;
+package lib2d;
 
 import java.awt.geom.Rectangle2D;
 
 
 public abstract class GameObject {
 	public Rectangle2D.Float area;
-    protected GameBase engine;
+    protected Game engine;
     
     public GameObject() {
         this(0,0,0,0);
@@ -37,11 +37,11 @@ public abstract class GameObject {
         setLocation((engine.getScreenWidth() - area.width)/2, (engine.getScreenHeight() - area.height)/2);
     }
 
-    public GameBase getEngine() {
+    public Game getEngine() {
         return engine;
     }
 
-    public void setEngine(GameBase engine) {
+    public void setEngine(Game engine) {
         this.engine = engine;
     }
     

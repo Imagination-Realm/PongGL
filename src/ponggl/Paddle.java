@@ -4,6 +4,9 @@ package ponggl;
 import java.awt.Color;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+
+import lib2d.GameObject;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.*;

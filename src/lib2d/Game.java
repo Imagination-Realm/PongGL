@@ -1,18 +1,18 @@
 
-package ponggl;
+package lib2d;
 
 import java.util.ArrayList;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 
 
-public abstract class GameBase {
+public abstract class Game {
     private final int screenWidth;
     private final int screenHeight;
     private final ArrayList<GameObject> gObjects;
     private Graphics graphics;
     
-    public GameBase(int screenWidth, int screenHeight, String windowTitle) throws LWJGLException {
+    public Game(int screenWidth, int screenHeight, String windowTitle) throws LWJGLException {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         
@@ -52,14 +52,6 @@ public abstract class GameBase {
         }
         Display.destroy();
     }
-
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public int getScreenHeight() {
-        return screenHeight;
-    }
     
     public void registerObject(GameObject obj) {
         obj.setEngine(this);
@@ -71,6 +63,18 @@ public abstract class GameBase {
         gObjects.remove(obj);
     }
     
-    public abstract void think();
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+    
+    public Graphics getGraphics() {
+		return graphics;
+	}
+
+	public abstract void think();
     public abstract void onClose();
 }

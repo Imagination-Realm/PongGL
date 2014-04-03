@@ -3,6 +3,10 @@ package ponggl;
 
 import java.awt.Color;
 import java.nio.FloatBuffer;
+
+import lib2d.GameObject;
+import lib2d.Vector2D;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
