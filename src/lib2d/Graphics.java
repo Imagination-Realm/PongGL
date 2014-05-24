@@ -2,9 +2,8 @@
 package lib2d;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -61,8 +60,8 @@ public class Graphics {
     }
     
     private void setupShaders() {
-        vsId = this.loadShader("resources/shaders/vertex.glsl", GL20.GL_VERTEX_SHADER);
-        fsId = this.loadShader("resources/shaders/fragment.glsl", GL20.GL_FRAGMENT_SHADER);
+        vsId = this.loadShader("shaders/vertex.glsl", GL20.GL_VERTEX_SHADER);
+        fsId = this.loadShader("shaders/fragment.glsl", GL20.GL_FRAGMENT_SHADER);
 
         pId = GL20.glCreateProgram();
         GL20.glAttachShader(pId, vsId);
@@ -78,26 +77,28 @@ public class Graphics {
         
         int  errorCheckValue = GL11.glGetError();
         if (errorCheckValue != GL11.GL_NO_ERROR) {
-                System.out.println("ERROR - Could not create the shaders:" + GLU.gluErrorString(errorCheckValue));
-                System.exit(-1);
+        	System.out.println("ERROR - Could not create the shaders:" + GLU.gluErrorString(errorCheckValue));
+        	System.exit(-1);
         }
     }
     
     public int loadShader(String filename, int type) {
         StringBuilder shaderSource = new StringBuilder();
         int shaderID = 0;
-
+        
+        InputStream is = null;
         try {
-                BufferedReader reader = new BufferedReader(new FileReader(filename));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                        shaderSource.append(line).append("\n");
-                }
-                reader.close();
+        	ClassLoader cl = this.getClass().getClassLoader();
+        	is = cl.getResourceAsStream(filename);
+            int content;
+            while ((content = is.read()) != -1) {
+            	shaderSource.append((char)content);
+            }
+        	is.close();
         } catch (IOException e) {
-                System.err.println("Could not read file.");
-                e.printStackTrace();
-                System.exit(-1);
+        	System.err.println("Could not read file.");
+        	e.printStackTrace();
+        	System.exit(-1);
         }
 
         shaderID = GL20.glCreateShader(type);
